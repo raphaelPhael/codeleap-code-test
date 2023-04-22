@@ -1,169 +1,172 @@
 import { useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
-import Button from '@mui/material/Button';
-import CircularProgress from "@mui/material/CircularProgress";
-import Grid from "@mui/material/Grid";
-import Modal from '@mui/material/Modal';
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Paper from "@mui/material/Paper";
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import EditIcon from '@mui/icons-material/Edit';
+import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import { v4 as uuidv4 } from 'uuid';
-import { getPostsSuccess, deletePostSuccess, updatePostSuccess } from "../../actions/actions";
-import { useSelector, useDispatch } from 'react-redux'
-import InfiniteScroll from 'react-infinite-scroll-component';
-import getTimeSincePost from "../../utils/getTime";
+import { v4 as uuidv4 } from "uuid";
+import {
+  getPostsSuccess,
+  deletePostSuccess,
+  updatePostSuccess,
+} from "../../actions/actions";
+import { useSelector, useDispatch } from "react-redux";
+import InfiniteScroll from "react-infinite-scroll-component";
+import Post from "../Post/post-component";
 
-import {styled, TextField as TextFieldMui} from '@mui/material'
-const TextFieldInput = styled(TextFieldMui)(() => ({
-  border: "1px solid #777777", 
-  borderRadius: "8px", 
-  width: "612px", 
-  height: "32px"
+import { styled, TextField as TextFieldMui } from "@mui/material";
+
+const TextFieldInput = styled(TextFieldMui)(({ height = 32 }) => ({
+  padding: "0",
+  "& .MuiInputBase-root": {
+    height: height,
+    border: "1px solid #777777",
+    borderRadius: "8px",
+    outline: "none",
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
+  },
 }));
 
 const style = {
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 660,
   height: 146,
-  padding: '24px',
+  padding: "24px",
   borderRadius: "16px",
-  border: '1px solid #999999',
-  outline: 'none',
+  border: "1px solid #999999",
+  outline: "none",
 };
 
 const editModalStyle = {
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 660,
   minHeight: 334,
-  padding: '24px',
+  padding: "24px",
   borderRadius: "16px",
-  border: '1px solid #999999',
-  outline: 'none',
-}
+  border: "1px solid #999999",
+  outline: "none",
+};
 
 const Posts = () => {
-  const initialUrl = 'https://dev.codeleap.co.uk/careers/';
+  const initialUrl = "https://dev.codeleap.co.uk/careers/";
   const [url, setUrl] = useState(initialUrl);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [postId, setPostId] = useState();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [toast, setToast] = useState({
     open: false,
-    message: '',
+    message: "",
     severity: null,
   });
-  const username = useSelector((state) => state.user.username);
-  const posts = useSelector((state) => state.posts.posts)
+  const posts = useSelector((state) => state.posts.posts);
   const dispatch = useDispatch();
 
   async function getPosts() {
     let res = await fetch(url, {
-      method: 'GET'
+      method: "GET",
     });
 
     if (res.ok) {
       let data = await res.json();
-      const sortedByDateTime = data.results.sort((a, b) => new Date(b.created_datetime) - new Date(a.created_datetime));
+      const sortedByDateTime = data.results.sort(
+        (a, b) => new Date(b.created_datetime) - new Date(a.created_datetime)
+      );
       dispatch(getPostsSuccess(sortedByDateTime));
       setUrl(data.next);
     } else {
       setToast({
         open: true,
-        message: 'Oops! Something went wrong.',
-        severity: 'error',
-      }); 
+        message: "Oops! Something went wrong.",
+        severity: "error",
+      });
     }
   }
 
-  const openDeleteModal = (id) => {
-    setPostId(id);
-    setIsDeleteModalOpen(true);
-  }
-
-  const openEditModal = (id) => {
-    setPostId(id);
-    setIsEditModalOpen(true);
-  }
-
   async function handleDeletePost() {
+    setIsDeleteLoading(true);
     const res = await fetch(`${initialUrl}/${postId}/`, {
-      method: 'DELETE'
+      method: "DELETE",
     });
 
-    if(res.ok) {
-      dispatch(deletePostSuccess(postId)); 
+    if (res.ok) {
+      dispatch(deletePostSuccess(postId));
       setIsDeleteModalOpen(false);
       setToast({
         open: true,
-        message: 'Post Deleted Successfully!',
-        severity: 'success',
+        message: "Post Deleted Successfully!",
+        severity: "success",
       });
     } else {
       setIsDeleteModalOpen(false);
       setToast({
         open: true,
-        message: 'Oops! Something went wrong.',
-        severity: 'error',
+        message: "Oops! Something went wrong.",
+        severity: "error",
       });
     }
+    setIsDeleteLoading(true);
   }
 
   async function handleEditPost() {
-    const bodyData = {
-      title,
-      content
-    }
+    setIsEditLoading(true);
+    const bodyData = {};
+    if (title.length) bodyData.title = title;
+    if (content.length) bodyData.content = content;
 
     const res = await fetch(`${initialUrl}/${postId}/`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(bodyData)
-    })
+      body: JSON.stringify(bodyData),
+    });
 
     if (res.ok) {
       const data = await res.json();
       dispatch(updatePostSuccess(data));
-      setTitle('');
-      setContent('');
+      setTitle("");
+      setContent("");
       setIsEditModalOpen(false);
       setToast({
         open: true,
-        message: 'Post Updated Successfully!',
-        severity: 'success',
+        message: "Post Updated Successfully!",
+        severity: "success",
       });
-      console.log(bodyData)
+      console.log(bodyData);
     } else {
       setToast({
         open: true,
-        message: 'Oops! Something went wrong.',
-        severity: 'error',
+        message: "Oops! Something went wrong.",
+        severity: "error",
       });
     }
+    setIsEditLoading(true);
   }
 
   const handleCloseToast = () => {
-    setToast(prev => ({ ...prev, open: false }));
-  }
+    setToast((prev) => ({ ...prev, open: false }));
+  };
 
   useEffect(() => {
     getPosts();
@@ -171,85 +174,32 @@ const Posts = () => {
 
   return (
     <>
-      <Snackbar open={toast.open} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} onClose={() => handleCloseToast()}>
-        <Alert variant="filled" severity={toast.severity}>{toast.message}</Alert>      
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => handleCloseToast()}
+      >
+        <Alert variant="filled" severity={toast.severity}>
+          {toast.message}
+        </Alert>
       </Snackbar>
       <InfiniteScroll
+        style={{ padding: "0 24px" }}
         dataLength={posts.length}
         next={getPosts}
         hasMore={true}
-        loader={
-            <CircularProgress />
-          // <Grid container justifyContent='center'>
-          // </Grid>
-        }
       >
-        {posts.map(x => {
+        {posts.map((post) => {
           return (
-            <Box
-            key={uuidv4()}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "752px", 
-              minHeight: "334px", 
-              marginBottom: "24px",
-              borderLeft: "1px solid #999999", 
-              borderRight: "1px solid #999999", 
-              borderBottom: "1px solid #999999", 
-              borderTop: "1px solid #999999", 
-              borderTopLeftRadius: "20px",
-              borderTopRightRadius: "20px",
-              borderBottomLeftRadius: "16px",
-              borderBottomRightRadius: "16px",
-              marginTop: "24px"
-            }}
-            >
-              <Box>
-                <Box sx={{
-                  bgcolor: "#7695EC", 
-                  height: "70px", 
-                  borderTopLeftRadius: "16px", 
-                  borderTopRightRadius: "16px", 
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "0 24px"
-                  }}>
-                  <Box sx={{ width: "75%" }}>
-                    <Typography 
-                      variant="h4" 
-                      sx={{ 
-                        width: "100%",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        textOverflow: "ellipsis",
-                        fontSize: "22px", 
-                        fontWeight: "700", 
-                        color: "#fff" 
-                      }}>
-                        {x.title}
-                    </Typography>
-                  </Box>
-                  {x.username === username &&
-                    <Box>
-                      <DeleteForeverIcon sx={{ marginRight: "24px", color: "#fff", cursor: "pointer" }} onClick={() => openDeleteModal(x.id)}/>
-                      <EditIcon sx={{ color: "#fff", cursor: "pointer" }} onClick={() => openEditModal(x.id)}/>
-                    </Box>
-                  }
-                </Box>
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", padding: "24px" }}>
-                    <Typography sx={{ fontSize: "18px", color: "#777777", fontWeight: "700" }}>@{x.username}</Typography>
-                    <Typography sx={{ fontSize: "18px", color: "#777777", fontWeight: "400" }}>{getTimeSincePost(x.created_datetime)}</Typography>
-                  </Box>
-                  <Box sx={{ padding: "0 24px 24px 24px", wordBreak: "break-all" }}>
-                    <Typography paragraph={true} sx={{ fontSize: "18px", fontWeight: "700", color: "#000000" }}>{x.content}</Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Box>    
-          )
+            <Post
+              key={uuidv4()}
+              post={post}
+              setPostId={(postId) => setPostId(postId)}
+              setIsEditModalOpen={(bool) => setIsEditModalOpen(bool)}
+              setIsDeleteModalOpen={(bool) => setIsDeleteModalOpen(bool)}
+            />
+          );
         })}
       </InfiniteScroll>
       <Modal
@@ -260,47 +210,52 @@ const Posts = () => {
       >
         <Paper sx={style} elevation={0}>
           <Box>
-            <Typography id="modal-modal-title" variant="h4" sx={{ fontSize: "22px", fontWeight: "700" }}>
+            <Typography
+              id="modal-modal-title"
+              variant="h4"
+              sx={{ fontSize: "22px", fontWeight: "700" }}
+            >
               Are you sure you want to delete this item?
             </Typography>
           </Box>
           <Box sx={{ alignSelf: "end" }}>
-            <Button 
-            sx={{ 
-              width: "120px", 
-              height: "32px", 
-              bgcolor: "#fff", 
-              border: "1px solid #999999", 
-              borderRadius: "8px",
-              fontSize: "16px", 
-              fontWeight: "700",
-              color: "#000",
-              marginRight: "12px",
-              '&:hover': {
-                bgcolor: "#ececec"
-              }
-            }} 
-            onClick={() => setIsDeleteModalOpen(false)}
+            <Button
+              sx={{
+                width: "120px",
+                height: "32px",
+                bgcolor: "#fff",
+                border: "1px solid #999999",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#000",
+                marginRight: "12px",
+                "&:hover": {
+                  bgcolor: "#ececec",
+                },
+              }}
+              onClick={() => setIsDeleteModalOpen(false)}
             >
               Cancel
             </Button>
-            <Button 
-            sx={{ 
-              width: "120px", 
-              height: "32px", 
-              bgcolor: "#ff5151", 
-              borderRadius: "8px",
-              fontSize: "16px", 
-              fontWeight: "bold",
-              color: "#fff",
-              '&:hover': {
-                bgcolor: "#fd3939"
-              }
-            }}
-            onClick={() => handleDeletePost()}
+            <LoadingButton
+              loading={isDeleteLoading}
+              sx={{
+                width: "120px",
+                height: "32px",
+                bgcolor: "#ff5151",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: "#fd3939",
+                },
+              }}
+              onClick={() => handleDeletePost()}
             >
               Delete
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </Modal>
@@ -312,92 +267,89 @@ const Posts = () => {
       >
         <Paper sx={editModalStyle} elevation={0}>
           <Box>
-            <Typography id="modal-modal-title" variant="h4" sx={{ fontSize: "22px", fontWeight: "700" }}>
+            <Typography
+              id="modal-modal-title"
+              variant="h4"
+              sx={{ fontSize: "22px", fontWeight: "700" }}
+            >
               Edit item
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", paddingBottom: "24px" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              paddingBottom: "24px",
+            }}
+          >
             <Box sx={{ paddingTop: "24px" }}>
               <Typography>Title</Typography>
               <TextFieldInput
+                fullWidth
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                // disableUnderline={true} 
-                // variant="outlined"
-                // size="small"
-                placeholder="Hello World" 
-                
-                // sx={{ 
-                //   border: "1px solid #777777", 
-                //   borderRadius: "8px", 
-                //   width: "710px", 
-                //   height: "32px" 
-                //   }} 
-                />
-              {/* <InputLabel sx={{ color: "#000", marginTop: "24px" }}>Content</InputLabel> */}
+                placeholder="Hello World"
+              />
             </Box>
             <Box sx={{ paddingTop: "24px" }}>
               <Typography>Content</Typography>
-              <TextField 
+              <TextFieldInput
+                fullWidth
+                height={74}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                // id="outlined-basic" 
-                // disableUnderline={true} 
                 variant="outlined"
                 multiline
                 rows={2}
                 placeholder="Content Here"
-                sx={{
-                  width: "612px",
-                  // height: "74px",
-                  // border: "1px solid #777777", 
-                  borderRadius: "8px", 
-                }}
+                sx={{ borderRadius: "8px" }}
               />
             </Box>
           </Box>
           <Box sx={{ alignSelf: "end" }}>
-            <Button 
-            sx={{ 
-              width: "120px", 
-              height: "32px", 
-              bgcolor: "#fff", 
-              border: "1px solid #999999", 
-              borderRadius: "8px",
-              fontSize: "16px", 
-              fontWeight: "700",
-              color: "#000",
-              marginRight: "12px",
-              '&:hover': {
-                bgcolor: "#ececec"
-              }
-            }} 
-            onClick={() => setIsEditModalOpen(false)}
+            <Button
+              sx={{
+                width: "120px",
+                height: "32px",
+                bgcolor: "#fff",
+                border: "1px solid #999999",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#000",
+                marginRight: "12px",
+                "&:hover": {
+                  bgcolor: "#ececec",
+                },
+              }}
+              onClick={() => setIsEditModalOpen(false)}
             >
               Cancel
             </Button>
-            <Button 
-            sx={{ 
-              width: "120px", 
-              height: "32px", 
-              bgcolor: "#47b960", 
-              borderRadius: "8px",
-              fontSize: "16px", 
-              fontWeight: "bold",
-              color: "#fff",
-              '&:hover': {
-                bgcolor: "#30b84d"
-              }
-            }}
-            onClick={() => handleEditPost()}
+            <LoadingButton
+              loading={isEditLoading}
+              disabled={!title.length && !content.length ? true : false}
+              sx={{
+                width: "120px",
+                height: "32px",
+                bgcolor: "#47b960",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: "#1fb640",
+                },
+              }}
+              onClick={() => handleEditPost()}
             >
               Save
-            </Button>
+            </LoadingButton>
           </Box>
         </Paper>
       </Modal>
     </>
-  )
+  );
 };
 
 export default Posts;

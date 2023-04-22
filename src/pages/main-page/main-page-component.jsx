@@ -1,20 +1,19 @@
-import Box from '@mui/material/Box';
-import Share from '../../components/SharePost/share-component';
-import Posts from '../../components/Posts/posts-component';
-import Header from '../../components/Header/header-component';
-
-import '@fontsource/roboto/300.css';
+import Container from "@mui/material/Container";
+import CreatePost from "../../components/CreatePost/create-post-component";
+import Posts from "../../components/Posts/posts-component";
+import Header from "../../components/Header/header-component";
 
 const MainPage = () => {
- return (
-  <Box sx={{ width: "100%" }}>
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+  return (
+    <Container
+      maxWidth="false"
+      sx={{ maxWidth: "800px", background: "#FFFFFF", padding: "0 !important" }}
+    >
       <Header />
-      <Share />
+      <CreatePost />
       <Posts />
-    </Box>
-  </Box>
- ) 
+    </Container>
+  );
 };
 
 export default MainPage;
