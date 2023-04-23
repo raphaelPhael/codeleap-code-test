@@ -1,50 +1,20 @@
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import { Grid, styled, TextField as TextFieldMui } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-const TextFieldInput = styled(TextFieldMui)(({ height = 32 }) => ({
-  width: "100%",
-  padding: "0",
-  "& .MuiInputBase-root": {
-    height: height,
-    border: "1px solid #777777",
-    borderRadius: "8px",
-    outline: "none",
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "none",
-    },
-  },
-}));
+import { TextFieldInput } from "../../globalStyles";
+import {
+  signUpModalContainerSx,
+  signUpModalSx,
+  enterButtonSx,
+} from "./signUpStyles";
 
 const SignUpPage = ({ userName, setUserName, handleClick }) => {
-  const signUpModal = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    width: "100%",
-    minHeight: "205px",
-    backgroundColor: "#fff",
-    padding: "24px",
-    borderRadius: "16px",
-    border: "1px solid #cccccc",
-    outline: "none",
-  };
-
   return (
-    <Container
-      maxWidth="false"
-      sx={{
-        maxWidth: "548px",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "16px",
-      }}
-    >
+    <Container maxWidth="false" sx={signUpModalContainerSx}>
       <Box sx={{ width: "100%" }}>
-        <Box sx={signUpModal}>
+        <Box sx={signUpModalSx}>
           <Box>
             <Typography
               id="modal-modal-title"
@@ -66,6 +36,7 @@ const SignUpPage = ({ userName, setUserName, handleClick }) => {
                 Please enter your username
               </Typography>
               <TextFieldInput
+                fullWidth
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 placeholder="Your username"
@@ -75,18 +46,7 @@ const SignUpPage = ({ userName, setUserName, handleClick }) => {
           <Grid container direction="row" justifyContent="flex-end">
             <Button
               disabled={userName.length ? false : true}
-              sx={{
-                width: "120px",
-                height: "32px",
-                bgcolor: "#7695ec",
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "#fff",
-                "&:hover": {
-                  bgcolor: "#5e83eb",
-                },
-              }}
+              sx={enterButtonSx}
               onClick={() => handleClick()}
             >
               Enter

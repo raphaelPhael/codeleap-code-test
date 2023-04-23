@@ -13,12 +13,12 @@ export default function getTimeSincePost(dateString) {
 
   const hours = Math.floor(timeDiffInMs / (1000 * 60 * 60));
   if (hours < 24) {
-    return `${hours} hours ago`;
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
   }
 
   const days = Math.floor(timeDiffInMs / (1000 * 60 * 60 * 24));
   if (days < 30) {
-    return `${days} days ago`;
+    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
   }
 
   const months = Math.floor(days / 30);

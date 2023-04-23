@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logUserSuccess } from "./actions/actions";
 import MainPage from "./pages/main-page/main-page-component";
-import SignUpPage from "./pages/signup-page/signup=page-component";
+import SignUpPage from "./pages/signup-page/signup-page-component";
 import "@fontsource/roboto/300.css";
 
 function App() {

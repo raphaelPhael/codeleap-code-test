@@ -8,8 +8,3 @@ export const updatePostSuccess = createAction(actionTypes.UPDATE_POST_SUCCESS);
 export const deletePostSuccess = createAction(actionTypes.DELETE_POST_SUCCESS);
 export const logUserSuccess = createAction(actionTypes.LOG_USER_SUCCESS);
 export const logOutUserSuccess = createAction(actionTypes.LOG_OUT_USER_SUCCESS);
-
-// export const getPosts = (page) => ({
-//   type: actionTypes.GET_POSTS,
-//   payload: page
-// })

@@ -4,6 +4,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useSelector } from "react-redux";
 import EditIcon from "@mui/icons-material/Edit";
 import getTimeSincePost from "../../utils/getTime";
+import { postWrapperSx, postHeaderSx, postTitleSx } from "./postStyles";
 
 const Post = ({
   post,
@@ -20,58 +21,20 @@ const Post = ({
 
   const openEditModal = (id) => {
     setPostId(id);
-    setIsEditModalOpen(true);
+    setIsEditModalOpen(true, post);
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "334px",
-        marginBottom: "24px",
-        borderLeft: "1px solid #999999",
-        borderRight: "1px solid #999999",
-        borderBottom: "1px solid #999999",
-        borderTop: "1px solid #999999",
-        borderTopLeftRadius: "20px",
-        borderTopRightRadius: "20px",
-        borderBottomLeftRadius: "16px",
-        borderBottomRightRadius: "16px",
-        marginTop: "24px",
-      }}
-    >
+    <Box sx={postWrapperSx}>
       <Box>
-        <Box
-          sx={{
-            bgcolor: "#7695EC",
-            height: "70px",
-            borderTopLeftRadius: "16px",
-            borderTopRightRadius: "16px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-          }}
-        >
+        <Box sx={postHeaderSx}>
           <Box sx={{ width: "75%" }}>
-            <Typography
-              variant="h4"
-              sx={{
-                width: "100%",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-                fontSize: "22px",
-                fontWeight: "700",
-                color: "#fff",
-              }}
-            >
+            <Typography variant="h4" sx={postTitleSx}>
               {post.title}
             </Typography>
           </Box>
           {post.username === username && (
-            <Box>
+            <Box sx={{ display: "flex" }}>
               <DeleteForeverIcon
                 sx={{
                   marginRight: "24px",
@@ -93,6 +56,7 @@ const Post = ({
               display: "flex",
               justifyContent: "space-between",
               padding: "24px",
+              flexWrap: "wrap",
             }}
           >
             <Typography

@@ -21,6 +21,24 @@ const TextFieldInput = styled(TextFieldMui)(({ height = 32 }) => ({
   },
 }));
 
+const createPostWrapperSx = {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  marginTop: "24px",
+  border: "1px solid #999999",
+  borderRadius: "16px",
+};
+
+const loadingButtonSx = {
+  width: "120px",
+  height: "32px",
+  bgcolor: "#7695EC",
+  "&:hover": {
+    bgcolor: "#5f86f3",
+  },
+};
+
 const CreatePost = () => {
   const username = useSelector((state) => state.user.username);
   const url = "https://dev.codeleap.co.uk/careers/";
@@ -75,17 +93,8 @@ const CreatePost = () => {
   };
 
   return (
-    <div style={{ padding: "0 24px" }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          marginTop: "24px",
-          border: "1px solid #999999",
-          borderRadius: "16px",
-        }}
-      >
+    <Box sx={{ padding: "0 24px" }}>
+      <Box sx={createPostWrapperSx}>
         <Snackbar
           open={toast.open}
           autoHideDuration={5000}
@@ -96,13 +105,7 @@ const CreatePost = () => {
             {toast.message}
           </Alert>
         </Snackbar>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            padding: "24px",
-          }}
-        >
+        <Box sx={{ display: "flex", flexDirection: "column", padding: "24px" }}>
           <Typography sx={{ fontSize: "22px", fontWeight: "700" }}>
             What's on your mind?
           </Typography>
@@ -142,14 +145,7 @@ const CreatePost = () => {
               loading={isLoading}
               disabled={title.length && content.length ? false : true}
               variant="contained"
-              sx={{
-                width: "120px",
-                height: "32px",
-                bgcolor: "#7695EC",
-                "&:hover": {
-                  bgcolor: "#5f86f3",
-                },
-              }}
+              sx={loadingButtonSx}
               onClick={() => createPostFn()}
             >
               Create
@@ -157,7 +153,7 @@ const CreatePost = () => {
           </Grid>
         </Box>
       </Box>
-    </div>
+    </Box>
   );
 };
 
