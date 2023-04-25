@@ -1,7 +1,7 @@
+import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useSelector } from "react-redux";
 import EditIcon from "@mui/icons-material/Edit";
 import getTimeSincePost from "../../utils/getTime";
 import { postWrapperSx, postHeaderSx, postTitleSx } from "./postStyles";

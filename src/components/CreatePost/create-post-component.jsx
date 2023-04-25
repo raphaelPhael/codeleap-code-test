@@ -41,7 +41,7 @@ const loadingButtonSx = {
 
 const CreatePost = () => {
   const username = useSelector((state) => state.user.username);
-  const url = "https://dev.codeleap.co.uk/careers/";
+  const url = process.env.REACT_APP_INITIAL_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -52,7 +52,8 @@ const CreatePost = () => {
   });
   const dispatch = useDispatch();
 
-  async function createPostFn() {
+  async function createPostFn(e) {
+    e.preventDefault();
     setIsLoading(true);
     const bodyData = {
       username,
@@ -109,48 +110,51 @@ const CreatePost = () => {
           <Typography sx={{ fontSize: "22px", fontWeight: "700" }}>
             What's on your mind?
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              paddingTop: "24px",
-            }}
-          >
-            <Box>
-              <Typography>Title</Typography>
-              <TextFieldInput
-                fullWidth
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Hello World"
-              />
-            </Box>
-            <Box sx={{ paddingTop: "24px" }}>
-              <Typography>Content</Typography>
-              <TextFieldInput
-                fullWidth
-                height={74}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                variant="outlined"
-                multiline
-                rows={2}
-                placeholder="Content Here"
-                sx={{ borderRadius: "8px" }}
-              />
-            </Box>
-          </Box>
-          <Grid container direction="row" justifyContent="flex-end" mt="24px">
-            <LoadingButton
-              loading={isLoading}
-              disabled={title.length && content.length ? false : true}
-              variant="contained"
-              sx={loadingButtonSx}
-              onClick={() => createPostFn()}
+          <form onSubmit={createPostFn}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                paddingTop: "24px",
+              }}
             >
-              Create
-            </LoadingButton>
-          </Grid>
+              <Box>
+                <Typography>Title</Typography>
+                <TextFieldInput
+                  fullWidth
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Hello World"
+                />
+              </Box>
+              <Box sx={{ paddingTop: "24px" }}>
+                <Typography>Content</Typography>
+                <TextFieldInput
+                  fullWidth
+                  height={74}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  variant="outlined"
+                  multiline
+                  rows={2}
+                  placeholder="Content Here"
+                  sx={{ borderRadius: "8px" }}
+                />
+              </Box>
+            </Box>
+            <Grid container direction="row" justifyContent="flex-end" mt="24px">
+              <LoadingButton
+                type="submit"
+                loading={isLoading}
+                disabled={title.length && content.length ? false : true}
+                variant="contained"
+                sx={loadingButtonSx}
+                // onClick={() => createPostFn()}
+              >
+                Create
+              </LoadingButton>
+            </Grid>
+          </form>
         </Box>
       </Box>
     </Box>

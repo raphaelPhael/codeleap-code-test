@@ -18,7 +18,8 @@ function App() {
     }
   }, []);
 
-  const handleClick = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     localStorage.setItem("userName", userName);
     dispatch(logUserSuccess(userName));
     setLoggedUserName(userName);
@@ -33,7 +34,7 @@ function App() {
         <SignUpPage
           userName={userName}
           setUserName={(username) => setUserName(username)}
-          handleClick={() => handleClick()}
+          handleSubmit={(e) => handleSubmit(e)}
         />
       }
     </>

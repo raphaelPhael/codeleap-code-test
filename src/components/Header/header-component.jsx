@@ -1,8 +1,8 @@
+import { useDispatch } from "react-redux";
+import { logOutUserSuccess } from "../../actions/actions";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useDispatch } from "react-redux";
-import { logOutUserSuccess } from "../../actions/actions";
 
 const headerSxWrapper = {
   display: "flex",
